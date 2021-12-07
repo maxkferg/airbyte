@@ -18,6 +18,14 @@ and coalesce(
 {% endif %}
 {%- endmacro -%}
 
+{%- macro clickhouse__incremental_clause(col_emitted_at) -%}
+{% if is_incremental() %}
+and coalesce(
+    cast({{ col_emitted_at }} as {{ type_timestamp_with_timezone() }}) >= (select max(cast({{ col_emitted_at }} as {{ type_timestamp_with_timezone() }})) from {{ this }}),
+    1)
+{% endif %}
+{%- endmacro -%}
+
 {# -- see https://on-systems.tech/113-beware-dbt-incremental-updates-against-snowflake-external-tables/ #}
 {%- macro snowflake__incremental_clause(col_emitted_at) -%}
 {% if is_incremental() %}

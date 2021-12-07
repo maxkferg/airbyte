@@ -37,6 +37,10 @@
     left join joined on _airbyte_{{ stream_name }}_hashid = joined._airbyte_hashid
 {%- endmacro %}
 
+{% macro clickhouse__cross_join_unnest(stream_name, array_col) -%}
+    array join {{ array_col }}
+{%- endmacro %}
+
 {% macro redshift__cross_join_unnest(stream_name, array_col) -%}
     left join joined on _airbyte_{{ stream_name }}_hashid = joined._airbyte_hashid
 {%- endmacro %}
@@ -76,6 +80,10 @@
 
 {% macro redshift__unnested_column_value(column_col) -%}
     _airbyte_nested_data
+{%- endmacro %}
+
+{% macro clickhouse__unnested_column_value(column_col) -%}
+    {{ column_col }}
 {%- endmacro %}
 
 {% macro mysql__unnested_column_value(column_col) -%}
