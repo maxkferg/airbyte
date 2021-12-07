@@ -68,10 +68,7 @@ def setup_test_path(request):
 def test_normalization(destination_type: DestinationType, test_resource_name: str, setup_test_path):
     if destination_type.value not in dbt_test_utils.get_test_targets():
         pytest.skip(f"Destinations {destination_type} is not in NORMALIZATION_TEST_TARGET env variable")
-    if (
-        destination_type.value in (DestinationType.ORACLE.value, DestinationType.CLICKHOUSE.value)
-        and test_resource_name == "test_nested_streams"
-    ):
+    if destination_type.value == DestinationType.ORACLE.value and test_resource_name == "test_nested_streams":
         pytest.skip(f"Destinations {destination_type} does not support nested streams")
 
     target_schema = dbt_test_utils.target_schema
@@ -133,7 +130,7 @@ def run_schema_change_normalization(destination_type: DestinationType, test_reso
     if destination_type.value in [DestinationType.MSSQL.value, DestinationType.SNOWFLAKE.value, DestinationType.CLICKHOUSE.value]:
         # TODO: create/fix github issue in corresponding dbt-adapter repository to handle schema changes (outside airbyte's control)
         pytest.skip(f"{destination_type} is disabled as it doesnt fully support schema change in incremental yet")
-        
+
     setup_schema_change_data(destination_type, test_resource_name, test_root_dir)
     generate_dbt_models(destination_type, test_resource_name, test_root_dir, "modified_models", "catalog_schema_change.json")
     setup_dbt_schema_change_test(destination_type, test_resource_name, test_root_dir)
